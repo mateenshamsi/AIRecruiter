@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RecruiterAI",
+  title: "NeuraHire",
   description: "AI interview Scheduler",
 };
 
