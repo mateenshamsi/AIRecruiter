@@ -30,7 +30,7 @@ function CreateInterviews() {
             
         </div>
         <Progress value={progress*33} className='text-purple-200'/>
-        {progress==1?<FormContainer handleInputChange={handleInputChange} GoToNext={GoToNext}/>:progress==2?<QuestionList>2</QuestionList>:<div>3</div>}
+        {progress==1?<FormContainer handleInputChange={handleInputChange} GoToNext={GoToNext}/>:progress==2?<QuestionList formData={formData}>2</QuestionList>:<div>3</div>}
     </div>
   )
 }
