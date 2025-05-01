@@ -1,7 +1,7 @@
 'use client'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Select,
     SelectContent,
@@ -10,16 +10,30 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { InterviewType } from '@/services/Constant'
+import { Button } from '@/components/ui/button'
+import { Forward } from 'lucide-react'
 
-function FormContainer({ handleInputChange }) {
-    const [interviewType, setInterviewType] = React.useState<string>('')
-
+function FormContainer({ handleInputChange,GoToNext}) {
+    // Use useState without the type annotation in the component definition
+    const [interviewType, setInterviewType] = useState('')
+    
     useEffect(() => {
         if (interviewType) {
             handleInputChange('interviewType', interviewType)
         }
+        
     }, [interviewType])
+    const AddInterviewType = (type) => {
+        const data =interviewType.includes(type) 
+        if (!data){
+            setInterviewType((prev) => [...prev, type.title]) 
+        }
+        else 
+        { 
+            setInterviewType((prev) => prev.filter((item) => item !== type))
 
+        }
+    }
     return (
         <div className='p-5 flex flex-col gap-2'>
             <div>
@@ -31,7 +45,7 @@ function FormContainer({ handleInputChange }) {
                     className='w-full my-2 border border-black'
                 />
             </div>
-
+            
             <div className='mt-5'>
                 <h2 className='text-sm'>Job Description</h2>
                 <Textarea
@@ -40,7 +54,7 @@ function FormContainer({ handleInputChange }) {
                     className='w-full my-2 border h-[100px] border-black'
                 />
             </div>
-
+            
             <div className='mt-5'>
                 <h2 className='text-sm'>Interview Duration</h2>
                 <Select onValueChange={(value) => handleInputChange('interviewDuration', value)}>
@@ -56,29 +70,32 @@ function FormContainer({ handleInputChange }) {
                     </SelectContent>
                 </Select>
             </div>
-
+            
             <div className='mt-5'>
                 <h2 className='text-sm'>Interview Types</h2>
                 <div className='flex flex-wrap gap-2'>
                     {InterviewType.map((type, index) => {
-                        const isSelected = interviewType === type.name
+                        // Use client-side only comparison with useEffect
                         return (
                             <div
                                 key={index}
-                                onClick={() => setInterviewType(type.name)}
+                                onClick={() => AddInterviewType(type)}
                                 className={`flex items-center gap-2 my-2 p-2 px-4 border rounded-full hover:cursor-pointer
-                                    ${isSelected
+                                    ${interviewType.includes(type.title)
                                         ? 'bg-purple-500 text-amber-50 border-purple-500'
                                         : 'bg-purple-100 border-purple-500 hover:bg-purple-500 hover:text-amber-50'
                                     }
                                 `}
                             >
-                                <type.icon className='text-2xl' />
+                                {typeof type.icon === 'function' && <type.icon className='text-2xl' />}
                                 <span>{type.title}</span>
                             </div>
                         )
                     })}
                 </div>
+            </div>
+            <div className='mt-5' onClick={()=>GoToNext()}>
+                    <Button className='w-full bg-purple-500 hover:bg-purple-200 hover:text-purple-500 '>Get Questions<Forward/></Button>
             </div>
         </div>
     )
