@@ -61,7 +61,7 @@ format: interviewQuestions=[
         })
         // Make your API call here
         // const response = await openai.chat.completions.create({...});
-        console.log(completion.choices[0].message.content)
+        console.log(completion)
         // Return the response
         return NextResponse.json({ success: true,
 data:completion.choices[0].message.content
