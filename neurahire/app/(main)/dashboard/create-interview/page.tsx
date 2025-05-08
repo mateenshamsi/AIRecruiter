@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import FormContainer from './_components/FormContainer'
 import QuestionList from './_components/QuestionList'
 import toast from 'react-hot-toast'
-import InterviewLInk from ' ./_components/InterviewLInk'
+import InterviewLInk from './_components/InterviewLInk'
 
 function CreateInterviews() {
   const router = useRouter()
@@ -41,12 +41,12 @@ function CreateInterviews() {
     <div className='mt-10 px-10 md:px-2 lg:px-44 xl:px-56 flex flex-col gap-5'>
         <div className='flex gap-5 items-center'>
             <ArrowLeft onClick={()=>router.back()}/>
-            <span className='text-lg font-bold'>Create New Interview</span>
+            <span className='text-lg font-bold '>Create New Interview</span>
             
         </div>
         <Progress value={progress*33} className='text-purple-200'/>
-        {progress==1?<FormContainer handleInputChange={handleInputChange} GoToNext={GoToNext}/>:progress==2?<QuestionList formData={formData}  onCreateLink={()=>createInterviewLink} />:progress==3?<div className='flex flex-col gap-5'>
-         <InterviewLInk interview_id/></div>:null}
+        {progress==1?<FormContainer handleInputChange={handleInputChange} GoToNext={GoToNext}/>:progress==2?<QuestionList formData={formData}  onCreateLink={(id)=>createInterviewLink(id)} />:progress==3?<div className='flex flex-col gap-5'>
+         <InterviewLInk interview_id={interviewId} formData={formData}/></div>:null}
     </div>
   )
 }
