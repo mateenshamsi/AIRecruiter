@@ -1,11 +1,13 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import Image from "next/image"
-import { Clock, Info, Video } from "lucide-react"
+import { Clock, Info, Loader2Icon, User, Video } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/services/supabaseClient"
+import { InterviewContext } from "@/context/InterviewContext"
+import { UserDetailContext } from "@/context/UserContext"
 
 function Interview() {
   const { interview_id } = useParams()
@@ -17,7 +19,9 @@ function Interview() {
   })
   const [userName, setUserName] = useState("")
   const [isLoading, setIsLoading] = useState(true)
-
+  const{interviewInfo,setInterviewInfo} = useContext(InterviewContext) 
+  const { user } = useContext(UserDetailContext)
+  const router = useRouter() 
   useEffect(() => {
     if (interview_id) {
       getInterviewDetails()
@@ -48,6 +52,7 @@ function Interview() {
         })
       }
 
+
     } catch (err) {
       console.error("Error:", err)
     } finally {
@@ -60,6 +65,7 @@ function Interview() {
   }
 
   const handleJoin = async() => {
+    setIsLoading(true)
     if (!userName.trim()) {
       alert("Please enter your name before joining")
       return
@@ -67,12 +73,20 @@ function Interview() {
     let {data:interview, error} = await supabase
       .from('interview').select('*')
       .eq('interview_id', interview_id)
+    setIsLoading(false)
     console.log("Interview",interview)
+    console.log("User",user)
+    setInterviewInfo({
+      
+      userName:user?.name ,
+      interviewData:interview
+    })
+    router.push(`/interview/${interview_id}/room`)
   }
 
   return (
     <div className="mt-16 md:px-28 px-10">
-      <div className="flex flex-col justify-center border rounded-xl shadow-sm items-center p-5 lg:px-48 xl:px-96">
+      <div className="flex flex-col justify-center border rounded-xl  items-center p-5 lg:px-48 xl:px-96">
         <Image src="/log.png" alt="logo" width={200} height={200} className="w-40 h-40" />
 
         {/* Main heading with gradient text */}
@@ -133,7 +147,7 @@ function Interview() {
           disabled={!userName.trim()}
           className="bg-purple-600 w-full hover:bg-purple-700 text-xl text-white font-medium px-3 py-2 h-auto rounded-xl transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          <Video className="h-4 w-4" /> Join Interview
+         {!isLoading&&<Video className="h-4 w-4" />}  {isLoading&&<Loader2Icon/>}Join Interview 
         </Button>
       </div>
     </div>
