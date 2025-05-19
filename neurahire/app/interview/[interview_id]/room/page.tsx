@@ -4,7 +4,7 @@ import { InterviewContext } from "@/context/InterviewContext"
 import { UserDetailContext } from "@/context/UserContext"
 import { Mic, Phone } from "lucide-react"
 import Image from "next/image"
-import React, { useEffect } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import Vapi from "@vapi-ai/web"
 import AlertConfirmation from "./_components/AlertConfirmation"
 import toast from "react-hot-toast"
@@ -12,27 +12,51 @@ import toast from "react-hot-toast"
 function InterviewRoom() {
   const { user } = React.useContext(UserDetailContext)
   const { interviewInfo, setInterviewInfo } = React.useContext(InterviewContext)
-  const [isUserSpeaking, setIsUserSpeaking] = React.useState(false)
-  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY as string)
+
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false)
+  const [isMute, setIsMute] = useState(false)
+
+  const vapiRef = useRef<Vapi | null>(null)
 
   useEffect(() => {
-    console.log("Interview", interviewInfo)
-    interviewInfo && startCall()
+    if (!vapiRef.current) {
+      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY as string)
+
+      vapiRef.current.on("call-start", () => {
+        toast.success("Call has started")
+      })
+
+      vapiRef.current.on("speech-start", () => {
+        setIsUserSpeaking(false)
+      })
+
+      vapiRef.current.on("speech-end", () => {
+        setIsUserSpeaking(true)
+      })
+
+      vapiRef.current.on("call-end", () => {
+        toast.success("Call has ended")
+        setInterviewInfo(null)
+      })
+    }
+  }, [setInterviewInfo])
+
+  useEffect(() => {
+    if (interviewInfo) {
+      startCall()
+    }
   }, [interviewInfo])
 
   const startCall = async () => {
-    let questionList = ""
-    interviewInfo?.interviewData[0]?.questionList.forEach(
-      (item, index) =>
-        (questionList =
-          questionList +
-          item.question +
-          (index === interviewInfo?.interviewData[0]?.questionList?.length - 1 ? "" : ", ")),
-    )
+    if (!vapiRef.current || !interviewInfo) return
+
+    const questionList = interviewInfo.interviewData[0]?.questionList
+      .map((q) => q.question)
+      .join(", ")
 
     const assistantOptions = {
       name: "AI Recruiter",
-      firstMessage: `Hi ${interviewInfo?.userName}, how are you? Ready for your interview on ${interviewInfo?.interviewData[0].jobPosition}?`,
+      firstMessage: `Hi ${interviewInfo.userName}, how are you? Ready for your interview on ${interviewInfo.interviewData[0].jobPosition}?`,
       transcriber: {
         provider: "deepgram",
         model: "nova-2",
@@ -52,7 +76,7 @@ function InterviewRoom() {
 You are an AI voice assistant conducting interviews.
 Your job is to ask candidates provided interview questions, assess their responses.
 Begin the conversation with a friendly introduction, setting a relaxed yet professional tone. Example:
-"Hey there! Welcome to your ${interviewInfo?.interviewData[0].jobPosition} interview. Let's get started with a few questions!"
+"Hey there! Welcome to your ${interviewInfo.interviewData[0].jobPosition} interview. Let's get started with a few questions!"
 Ask one question at a time and wait for the candidate's response before proceeding. Keep the questions clear and concise. Below Are the questions ask one by one:
 Questions: ${questionList}
 If the candidate struggles, offer hints or rephrase the question without giving away the answer. Example:
@@ -76,29 +100,27 @@ Key Guidelines:
       },
     }
 
-    vapi.start(assistantOptions)
+    await vapiRef.current.start(assistantOptions)
   }
 
   const stopInterview = async () => {
-    await vapi.stop()
+    console.log("stopInterview called")
+    await vapiRef.current?.stop()
   }
 
-  vapi.on("call-start", () => {
-    toast.success("Call has started")
-  })
+ const toggleMute = async () => {
+  if (!vapiRef.current) return
 
-  vapi.on("speech-start", () => {
-    setIsUserSpeaking(false)
-  })
-
-  vapi.on("speech-end", () => {
-    setIsUserSpeaking(true)
-  })
-
-  vapi.on("call-end", () => {
-    toast.success("Call has ended")
-    setInterviewInfo(null)
-  })
+  if (isMute) {
+    await vapiRef.current.setMuted(false)
+    setIsMute(false)
+    toast.success("Mic unmuted")
+  } else {
+    await vapiRef.current.setMuted(true)
+    setIsMute(true)
+    toast.success("Mic muted")
+  }
+}
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen max-w-4xl mx-auto px-4 py-8">
@@ -107,7 +129,7 @@ Key Guidelines:
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Interview Room</h1>
           <p className="text-gray-600">
             {interviewInfo
-              ? `Interview for ${interviewInfo?.interviewData[0]?.jobPosition} position`
+              ? `Interview for ${interviewInfo.interviewData[0]?.jobPosition} position`
               : "Welcome to your interview session"}
           </p>
         </div>
@@ -136,7 +158,9 @@ Key Guidelines:
           <div className="flex flex-col items-center">
             <div className="relative">
               <div
-                className={`absolute inset-0 rounded-full ${isUserSpeaking ? "bg-green-500/20 animate-pulse" : "bg-transparent"} transition-all duration-300`}
+                className={`absolute inset-0 rounded-full ${
+                  isUserSpeaking ? "bg-green-500/20 animate-pulse" : "bg-transparent"
+                } transition-all duration-300`}
               ></div>
               <div className="relative w-40 h-40 flex items-center justify-center rounded-full overflow-hidden border-4 border-white shadow-lg bg-gradient-to-br from-purple-500 to-indigo-600 text-white text-5xl font-bold">
                 {user?.name ? user.name[0].toUpperCase() : "U"}
@@ -154,26 +178,37 @@ Key Guidelines:
 
         {/* Call Controls */}
         <div className="flex justify-center space-x-6 mt-6">
+          {/* Mute / Unmute */}
           <button
-            className="flex items-center justify-center w-14 h-14 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md transition-colors duration-200"
-            aria-label="Mute microphone"
+            onClick={toggleMute}
+            className={`flex items-center justify-center w-14 h-14 ${
+              isMute ? "bg-yellow-100 hover:bg-yellow-200" : "bg-gray-100 hover:bg-gray-200"
+            } rounded-full shadow-md transition-colors duration-200`}
+            aria-label="Toggle microphone"
           >
-            <Mic className="h-6 w-6 text-gray-700" />
+            <Mic className={`h-6 w-6 ${isMute ? "text-yellow-600" : "text-gray-700"}`} />
           </button>
 
+          {/* End Call */}
           <AlertConfirmation stopInterview={stopInterview}>
-            <button
+            <div
               className="flex items-center justify-center w-14 h-14 bg-red-500 hover:bg-red-600 rounded-full shadow-md transition-colors duration-200"
               aria-label="End call"
             >
               <Phone className="h-6 w-6 text-white" />
-            </button>
+            </div>
           </AlertConfirmation>
         </div>
 
         {/* Interview Status */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">{isUserSpeaking ? "Your turn to speak" : "AI is speaking..."}</p>
+          <p className="text-sm text-gray-500">
+            {isMute
+              ? "Your mic is muted"
+              : isUserSpeaking
+              ? "Your turn to speak"
+              : "AI is speaking..."}
+          </p>
         </div>
       </div>
     </div>
