@@ -19,6 +19,7 @@ function Interview() {
   })
   const [userName, setUserName] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [email,setEmail] = useState("") 
   const{interviewInfo,setInterviewInfo} = useContext(InterviewContext) 
   const { user } = useContext(UserDetailContext)
   const router = useRouter() 
@@ -63,6 +64,9 @@ function Interview() {
   const handleNameChange = (e) => {
     setUserName(e.target.value)
   }
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value)
+  }
 
   const handleJoin = async() => {
     setIsLoading(true)
@@ -77,7 +81,7 @@ function Interview() {
     console.log("Interview",interview)
     console.log("User",user)
     setInterviewInfo({
-      
+      userEmail:email , 
       userName:user?.name ,
       interviewData:interview
     })
@@ -115,6 +119,13 @@ function Interview() {
             value={userName}
             onChange={handleNameChange}
             placeholder="Eg John Smith"
+            className="bg-[#f0e6ff] border-2 border-[#c8b3e6] rounded-2xl p-2 mt-2 w-full focus:border-purple-600 focus:ring-2 focus:ring-purple-200 transition-all duration-200"
+          />
+           <Input
+            type="text"
+            value={email}
+            onChange={handleEmailChange}
+            placeholder="Eg johnsmith@gmail.com"
             className="bg-[#f0e6ff] border-2 border-[#c8b3e6] rounded-2xl p-2 mt-2 w-full focus:border-purple-600 focus:ring-2 focus:ring-purple-200 transition-all duration-200"
           />
         </div>

@@ -12,7 +12,7 @@ import toast from "react-hot-toast"
 function InterviewRoom() {
   const { user } = React.useContext(UserDetailContext)
   const { interviewInfo, setInterviewInfo } = React.useContext(InterviewContext)
-
+  const [conversation,setConversation] = useState("")
   const [isUserSpeaking, setIsUserSpeaking] = useState(false)
   const [isMute, setIsMute] = useState(false)
 
@@ -36,7 +36,13 @@ function InterviewRoom() {
 
       vapiRef.current.on("call-end", () => {
         toast.success("Call has ended")
-        setInterviewInfo(null)
+       
+      })
+
+      vapiRef.current.on("message",(message)=>{
+        console.log(message.conversation)  
+        setConversation(message.conversation)  
+        
       })
     }
   }, [setInterviewInfo])
@@ -121,6 +127,10 @@ Key Guidelines:
     toast.success("Mic muted")
   }
 }
+
+  const generateFeedback=()=>{
+    
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen max-w-4xl mx-auto px-4 py-8">
