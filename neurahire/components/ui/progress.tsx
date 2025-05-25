@@ -7,20 +7,9 @@ import { cn } from "@/lib/utils"
 
 function Progress({
   className,
-  value = 0,
+  value,
   ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root> & { value?: number }) {
-  // Determine background color based on value
-  let backgroundColor = "bg-purple-200"; // default light
-
-  if (value > 75) {
-    backgroundColor = "bg-purple-800"; // dark purple
-  } else if (value > 50) {
-    backgroundColor = "bg-purple-600";
-  } else if (value > 25) {
-    backgroundColor = "bg-purple-400";
-  }
-
+}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
@@ -32,11 +21,8 @@ function Progress({
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
-        className={cn(
-          "h-full w-full flex-1 transition-all",
-          backgroundColor
-        )}
-        style={{ transform: `translateX(-${100 - value}%)` }}
+        className="bg-primary h-full w-full flex-1 transition-all"
+        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />
     </ProgressPrimitive.Root>
   )
