@@ -121,6 +121,8 @@ function Interview() {
             placeholder="Eg John Smith"
             className="bg-[#f0e6ff] border-2 border-[#c8b3e6] rounded-2xl p-2 mt-2 w-full focus:border-purple-600 focus:ring-2 focus:ring-purple-200 transition-all duration-200"
           />
+          <h2 className="text-gray-700 font-medium mb-1 text-sm tracking-wide  mt-2">ENTER YOUR EMAIL</h2>
+
            <Input
             type="text"
             value={email}
