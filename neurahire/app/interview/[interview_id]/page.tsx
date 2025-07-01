@@ -80,10 +80,12 @@ function Interview() {
     setIsLoading(false)
     console.log("Interview",interview)
     console.log("User",user)
+    console.log('Username', userName)
     setInterviewInfo({
       userEmail:email , 
-      userName:user?.name ,
-      interviewData:interview
+      userName:userName,
+      interviewData:interview,
+      interview_id:interview_id
     })
     router.push(`/interview/${interview_id}/room`)
   }

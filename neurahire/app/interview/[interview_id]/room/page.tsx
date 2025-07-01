@@ -8,22 +8,31 @@ import React, { useEffect, useRef, useState } from "react"
 import Vapi from "@vapi-ai/web"
 import AlertConfirmation from "./_components/AlertConfirmation"
 import toast from "react-hot-toast"
-
+import axios from "axios"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/services/supabaseClient"
 function InterviewRoom() {
   const { user } = React.useContext(UserDetailContext)
   const { interviewInfo, setInterviewInfo } = React.useContext(InterviewContext)
-  const [conversation,setConversation] = useState("")
+  const router = useRouter()
+  // State
+  const [conversation, setConversation] = useState(null)
   const [isUserSpeaking, setIsUserSpeaking] = useState(false)
   const [isMute, setIsMute] = useState(false)
-
-  const vapiRef = useRef<Vapi | null>(null)
+  const [conversationHistory, setConversationHistory] = useState([])
+  
+  // Refs to store latest conversation data (to avoid closure issues)
+  const conversationRef = useRef(null)
+  const conversationHistoryRef = useRef([])
+  const vapiRef = useRef(null)
 
   useEffect(() => {
     if (!vapiRef.current) {
-      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY as string)
+      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY)
 
       vapiRef.current.on("call-start", () => {
         toast.success("Call has started")
+        console.log("Call started - preserving existing conversation data")
       })
 
       vapiRef.current.on("speech-start", () => {
@@ -36,16 +45,47 @@ function InterviewRoom() {
 
       vapiRef.current.on("call-end", () => {
         toast.success("Call has ended")
-       
+        console.log("Call ended - conversation data at end:", conversationRef.current)
+        console.log("Call ended - history at end:", conversationHistoryRef.current)
+        
+        setTimeout(() => {
+          generateFeedback()
+        }, 2000)
       })
 
-      vapiRef.current.on("message",(message)=>{
-        console.log(message.conversation)  
-        setConversation(message.conversation)  
+      // Register message listener
+      vapiRef.current.on("message", (message) => {
+        console.log("Message received:", message)
         
+        if (message.conversation) {
+          console.log("Conversation updated:", message.conversation)
+          
+          // Update state
+          setConversation(message.conversation)
+          
+          // Update ref immediately
+          conversationRef.current = message.conversation
+          
+          // Store in history
+          setConversationHistory(prev => {
+            const updated = [...prev, message.conversation]
+            conversationHistoryRef.current = updated
+            console.log("Conversation history updated:", updated)
+            return updated
+          })
+        } else {
+          console.log("Message received but no conversation data:", message)
+        }
       })
     }
-  }, [setInterviewInfo])
+
+    // Cleanup function
+    return () => {
+      if (vapiRef.current) {
+        vapiRef.current.removeAllListeners()
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (interviewInfo) {
@@ -112,24 +152,80 @@ Key Guidelines:
   const stopInterview = async () => {
     console.log("stopInterview called")
     await vapiRef.current?.stop()
+    generateFeedback()
   }
 
- const toggleMute = async () => {
-  if (!vapiRef.current) return
+  const toggleMute = async () => {
+    if (!vapiRef.current) return
 
-  if (isMute) {
-    await vapiRef.current.setMuted(false)
-    setIsMute(false)
-    toast.success("Mic unmuted")
-  } else {
-    await vapiRef.current.setMuted(true)
-    setIsMute(true)
-    toast.success("Mic muted")
+    if (isMute) {
+      await vapiRef.current.setMuted(false)
+      setIsMute(false)
+      toast.success("Mic unmuted")
+    } else {
+      await vapiRef.current.setMuted(true)
+      setIsMute(true)
+      toast.success("Mic muted")
+    }
   }
-}
 
-  const generateFeedback=()=>{
+  const generateFeedback = async () => {
+    console.log("Generating feedback...")
     
+    // Use refs to get the most current data
+    const currentConversation = conversationRef.current
+    const currentHistory = conversationHistoryRef.current
+    
+    console.log("Current conversation (from ref):", currentConversation)
+    console.log("Conversation history (from ref):", currentHistory)
+    console.log("Current conversation (from state):", conversation)
+    console.log("Conversation history (from state):", conversationHistory)
+    
+    // Use the most recent conversation or the full history
+    const conversationToSend = currentConversation || (currentHistory && currentHistory.length > 0 ? currentHistory[currentHistory.length - 1] : null)
+    
+    if (!conversationToSend) {
+      console.log("No conversation data available for feedback")
+      console.log("Debugging - ref conversation:", conversationRef.current)
+      console.log("Debugging - ref history:", conversationHistoryRef.current)
+      console.log("Debugging - state conversation:", conversation)
+      console.log("Debugging - state history:", conversationHistory)
+      
+      toast.error("No conversation data available for feedback")
+      return
+    }
+
+    try {
+      console.log("Sending conversation data to API:", conversationToSend)
+      
+      const res = await axios.post('/api/ai-feedback', {
+        conversation: conversationToSend,
+        conversationHistory: currentHistory
+      })
+      
+      console.log("Feedback response:", res.data)
+    console.log("Interview info for feedback:", interviewInfo)
+  const { data, error } = await supabase
+    .from('interview-feedback')
+    .insert([
+      {
+        userName: interviewInfo.userName,
+        userEmail: interviewInfo.userEmail,
+        interview_id: interviewInfo.interview_id,
+        feedback: res.data, // or JSON.stringify(res.data) if needed
+      },
+    ])
+    .select()
+
+  if (error) throw error;
+
+  console.log("Inserted feedback data:", data)
+  router.push(`interview`+interviewInfo.interview_id+"completed")
+
+} catch (insertError) {
+  console.error("Supabase insert error:", insertError)
+  toast.error("Failed to save feedback to database")
+}
   }
 
   return (
@@ -219,6 +315,7 @@ Key Guidelines:
               ? "Your turn to speak"
               : "AI is speaking..."}
           </p>
+        
         </div>
       </div>
     </div>
