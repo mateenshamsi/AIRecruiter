@@ -50,15 +50,10 @@
     "next": "15.3.1",
     "next-themes": "^0.4.6",
     "openai": "^4.96.2",
-<<<<<<< HEAD
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-=======
-    "react": "^19.0.0",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^18.0.0",
     "react-hook-form": "^7.56.4",
->>>>>>> b03339e8e845b4db8be01e512aa19231bd5b51b5
     "react-hot-toast": "^2.5.2",
     "react-resizable-panels": "^3.0.2",
     "recharts": "^2.15.3",
