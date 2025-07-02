@@ -2,7 +2,7 @@
 NeuraHire is an AI-driven recruitment platform that conducts interviews and provides real-time feedback, streamlining the hiring process for both candidates and employers.
 </p>
 <h2>  🚀 Demo </h2> 
-<a href="https://neurahire.vercel.app/"/>
+<a href="https://neurahire.vercel.app/">Link to project</a>
 <h2>✨ Features</h2> 
 <ul>
 <li>🎙️ AI-conducted interviews</li>
