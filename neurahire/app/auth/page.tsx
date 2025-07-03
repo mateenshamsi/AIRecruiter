@@ -9,7 +9,7 @@ function Login() {
     const {error}= await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-    redirectTo: process.env.NEXT_PUBLIC_REDIRECT_URL || 'http://localhost:3000/auth/callback',
+    redirectTo: process.env.NEXT_PUBLIC_HOST_URL || 'http://localhost:3000/auth/callback',
   }
     })
     if(error){
