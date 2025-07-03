@@ -1,19 +1,18 @@
 'use client'
-import React, { useEffect } from 'react'
-import CreateOptions from './CreateOptions'
-import { Camera, Plus, Video } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { supabase } from '@/services/supabaseClient'
-import { useUser } from '@/app/provider'
-import { Inter } from 'next/font/google'
-import InterviewCard from './InterviewCard'
+import React, { useEffect } from 'react'
+import { useUser } from '../provider'
+import { Plus, Video } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import InterviewCard from '../(main)/dashboard/_components/InterviewCard'
 
 type User = {
   email: string
+  // Add other properties if needed
 }
 
-function LatestInterviews() {
-  const [interviewList, setInterviewList] = React.useState([])
+function AllInterviews() {
+   const [interviewList, setInterviewList] = React.useState([])
   const { user } = useUser() as { user: User | null }
 
   useEffect(() => {
@@ -60,4 +59,5 @@ function LatestInterviews() {
   )
 }
 
-export default LatestInterviews
+
+export default AllInterviews
