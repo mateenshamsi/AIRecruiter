@@ -13,11 +13,11 @@ const Hero = () => {
               <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
                 🚀 AI-Powered Recruiting Revolution
               </div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Hire Smarter with{" "}
-                <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+              <h1 className="text-5xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                Hire Smarter with
+                <span className=" mx-4  bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
                   AI-Driven
-                </span>{" "}
+                </span>
                 Interviews
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
@@ -64,10 +64,10 @@ const Hero = () => {
           {/* Right Content - Dashboard Preview */}
           <div className="relative">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-500 transform rotate-6 rounded-3xl"></div>
+           
               <div className="relative bg-white p-1 rounded-3xl shadow-2xl">
                 <Image
-                  src="/home.png"
+                  src="/recruiter.png"
                   width={300}
                   height={200} 
                   alt="NeuraHire Dashboard" 
@@ -76,16 +76,7 @@ const Hero = () => {
               </div>
             </div>
             
-            {/* Floating Elements */}
-            <div className="absolute -top-4 -left-4 bg-white p-3 rounded-xl shadow-lg">
-              <div className="text-sm font-semibold text-gray-900">AI Interview</div>
-              <div className="text-xs text-gray-500">In Progress</div>
-            </div>
-            
-            <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white p-3 rounded-xl shadow-lg">
-              <div className="text-sm font-semibold">Match Found!</div>
-              <div className="text-xs">98% compatibility</div>
-            </div>
+          
           </div>
         </div>
       </div>

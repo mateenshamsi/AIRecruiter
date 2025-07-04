@@ -18,10 +18,10 @@ import { usePathname } from "next/navigation"
   export default function AppSidebar() {
     const path =usePathname()
     return (
-      <Sidebar className="w-[300px]">
+      <Sidebar className="w-[250px]">
         <SidebarHeader className="flex ">
-            <Image src={'/log-removebg-preview.png'} alt="NeuraHire" width={200} height={200}/>
-            <Button className="w-full mt-5 bg-purple-800"><Plus/>Create New Interview</Button>
+            <Image src={'/logo.png'} alt="NeuraHire" width={300} height={200}/>
+            <Button className="w-full mt-5 bg-[#5A189A]"><Plus/>Create New Interview</Button>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup >

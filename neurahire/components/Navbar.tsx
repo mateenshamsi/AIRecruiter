@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { useContext, useState } from "react";
 import Link from 'next/link';
 import { UserDetailContext } from "@/context/UserContext";
+import Image from "next/image";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,12 +21,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center">
-              <div className="w-5 h-5 bg-white rounded-sm opacity-90"></div>
-            </div>
-            <span className="text-xl font-bold text-gray-900">NeuraHire</span>
-          </div>
+          <Image src="/logo.png" alt="Logo" width={250} height={120}  />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
