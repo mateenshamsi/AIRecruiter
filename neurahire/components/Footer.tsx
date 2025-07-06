@@ -1,4 +1,5 @@
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -8,12 +9,10 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center">
-                <div className="w-5 h-5 bg-white rounded-sm opacity-90"></div>
-              </div>
-              <span className="text-xl font-bold text-white">NeuraHire</span>
+             
+              <Image src="/logo.png" alt="NeuraHire Logo" width={120} height={40} className="h-30"/>
             </div>
-            <p className="text-gray-400 leading-relaxed">
+            <p className="text-gray-400 -mt-10 leading-relaxed">
               Revolutionizing recruitment with AI-driven interviews and intelligent candidate screening.
             </p>
           </div>

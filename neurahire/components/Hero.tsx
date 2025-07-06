@@ -65,7 +65,7 @@ const Hero = () => {
           <div className="relative">
             <div className="relative">
            
-              <div className="relative bg-white p-1 rounded-3xl shadow-2xl">
+              <div className="relative ">
                 <Image
                   src="/recruiter.png"
                   width={300}
