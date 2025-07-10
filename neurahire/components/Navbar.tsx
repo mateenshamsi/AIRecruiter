@@ -6,14 +6,37 @@ import { useContext, useState } from "react";
 import Link from 'next/link';
 import { UserDetailContext } from "@/context/UserContext";
 import Image from "next/image";
+import { createClient } from '@supabase/supabase-js'; // Add this import
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, setUser } = useContext(UserDetailContext);
 
-  const handleLogout = () => {
-    // clear user context or perform actual logout logic here
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Error logging out:', error);
+        return;
+      }
+      
+      // Clear user context
+      setUser(null);
+      
+      // Optional: Redirect to home page
+      window.location.href = '/';
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
@@ -28,7 +51,7 @@ const Navbar = () => {
             <a href="#features" className="text-gray-600 hover:text-purple-600 transition-colors">Features</a>
             <a href="#how-it-works" className="text-gray-600 hover:text-purple-600 transition-colors">How it Works</a>
             <a href="#testimonials" className="text-gray-600 hover:text-purple-600 transition-colors">Testimonials</a>
-            <a href="#pricing" className="text-gray-600 hover:text-purple-600 transition-colors">Pricing</a>
+            <a href="/pricing" className="text-gray-600 hover:text-purple-600 transition-colors">Pricing</a>
           </div>
 
           {/* Desktop CTA */}

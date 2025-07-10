@@ -1,5 +1,8 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { useUser } from "@/app/provider";
+import Link from "next/link";
 
 const benefits = [
   "Free 14-day trial",
@@ -9,6 +12,8 @@ const benefits = [
 ];
 
 const CTA = () => {
+  const { user } = useUser() || { user: undefined };
+  console.log("User in CTA:", user);
   return (
     <section className="py-20 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,13 +29,18 @@ const CTA = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
-            >
-              Start Free Trial
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+           
+           <Button
+  size="lg"
+  className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+  asChild
+>
+  <Link href={user ? "/dashboard" : "/auth"}>
+    Start Free Trial
+    <ArrowRight className="ml-2 h-5 w-5" />
+  </Link>
+</Button>
+            
             <Button 
               size="lg" 
               variant="outline" 

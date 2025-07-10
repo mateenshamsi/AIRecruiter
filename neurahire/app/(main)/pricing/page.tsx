@@ -17,7 +17,7 @@ const pricingTiers = [
   },
   {
     name: 'Starter',
-    price: '$1,999',
+    price: '$99',
     description: 'Everything you need to scale your recruiting process',
     features: [
       'Unlimited AI matches to keep your pipeline full',
@@ -30,7 +30,7 @@ const pricingTiers = [
   },
   {
     name: 'Pro',
-    price: '$4,999',
+    price: '$999',
     description: 'Advanced features for enterprise teams',
     features: [
       'Advanced AI scoring & smart shortlisting',
