@@ -13,7 +13,7 @@ const benefits = [
 
 const CTA = () => {
   const { user } = useUser() || { user: undefined };
-  console.log("User in CTA:", user);
+
   return (
     <section className="py-20 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

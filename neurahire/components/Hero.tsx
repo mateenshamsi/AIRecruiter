@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import Image from "next/image";
-
+import Link from "next/link";
+import { useUser } from "@/app/provider";
 const Hero = () => {
+ const  { user } = useUser() || { user: undefined}
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
@@ -27,13 +29,16 @@ const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-8 py-4 text-lg"
-              >
-                Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+             <Button
+  size="lg"
+  className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+  asChild
+>
+  <Link href={user ? "/dashboard" : "/auth"}>
+    Start Free Trial
+    <ArrowRight className="ml-2 h-5 w-5" />
+  </Link>
+</Button>
               <Button 
                 size="lg" 
                 variant="outline" 
